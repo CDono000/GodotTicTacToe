@@ -11,8 +11,15 @@ config_version=5
 [application]
 
 config/name="temp"
-config/features=PackedStringArray("4.6", "Forward Plus")
+run/main_scene="uid://b7jtp2oigbtnw"
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=720
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
 
 [dotnet]
 
@@ -25,3 +32,4 @@ project/assembly_name="temp"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+environment/defaults/default_clear_color=Color(1, 0.28730625, 0.22523737, 1)
