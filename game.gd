@@ -24,7 +24,7 @@ func onClick(index, button):
 		for AIIndex in range(9):
 			if board[AIIndex/3][AIIndex%3] == "":
 				board[AIIndex/3][AIIndex%3] = "O"
-				var score = search(9, board.duplicate(true), true)
+				var score = search(9, board.duplicate(true), true, -10000, 10000)
 				board[AIIndex/3][AIIndex%3] = ""
 				if score <= bestScore:
 					bestScore = score
@@ -63,26 +63,32 @@ func checkFull(checkBoard):
 				return false
 	return true
 
-func search(depth: int, searchBoard: Array, isMax: bool):
+func search(depth: int, searchBoard: Array, isMax: bool, alpha: int, beta: int):
 	var best
 	if checkWin(searchBoard) != 0 or checkFull(searchBoard) or depth == 0:
 		return evaluate(searchBoard)
 	if isMax:
-		best = -INF
+		best = -10000
 		for index in range(9):
 			if searchBoard[index/3][index%3] == "":
 				searchBoard[index/3][index%3] = "X"
-				var score = search(depth-1, searchBoard.duplicate(true), false)
+				var score = search(depth-1, searchBoard.duplicate(true), false, alpha, beta)
 				searchBoard[index/3][index%3] = ""
 				best = max(score, best)
+				alpha = max(best, alpha)
+				if beta <= alpha:
+					return best
 	else:
-		best = INF
+		best = 10000
 		for index in range(9):
 			if searchBoard[index/3][index%3] == "":
 				searchBoard[index/3][index%3] = "O"
-				var score = search(depth-1, searchBoard.duplicate(true), true)
+				var score = search(depth-1, searchBoard.duplicate(true), true, alpha, beta)
 				searchBoard[index/3][index%3] = ""
 				best = min(score, best)
+				beta = min(best, beta)
+				if beta <= alpha:
+					return best
 	return best
 
 func evaluate(evalBoard):
@@ -90,14 +96,14 @@ func evaluate(evalBoard):
 	var win = checkWin(evalBoard)
 	var score = 0
 	if win == -1:
-		return -INF
+		return -1000
 	elif win == 1:
-		return INF
-	score += 7 * dict[board[0][0]]
-	score += 7 * dict[board[2][0]]
-	score += 7 * dict[board[2][2]]
-	score += 7 * dict[board[0][2]]
-	score += 5 * dict[board[1][1]]
+		return 1000
+	score += 7 * dict[evalBoard[0][0]]
+	score += 7 * dict[evalBoard[2][0]]
+	score += 7 * dict[evalBoard[2][2]]
+	score += 7 * dict[evalBoard[0][2]]
+	score += 5 * dict[evalBoard[1][1]]
 	return score
 
 func resetGame():
@@ -112,7 +118,7 @@ func resetGame():
 		for AIIndex in range(9):
 			if board[AIIndex/3][AIIndex%3] == "":
 				board[AIIndex/3][AIIndex%3] = "O"
-				var score = search(9, board.duplicate(true), true)
+				var score = search(9, board.duplicate(true), true, -10000, 10000)
 				board[AIIndex/3][AIIndex%3] = ""
 				if score <= bestScore:
 					bestScore = score
