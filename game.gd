@@ -26,7 +26,7 @@ func onClick(index, button):
 				board[AIIndex/3][AIIndex%3] = "O"
 				var score = search(9, board.duplicate(true), true)
 				board[AIIndex/3][AIIndex%3] = ""
-				if score < bestScore:
+				if score <= bestScore:
 					bestScore = score
 					bestMove = AIIndex
 		place(bestMove, buttons[bestMove])
@@ -72,14 +72,16 @@ func search(depth: int, searchBoard: Array, isMax: bool):
 		for index in range(9):
 			if searchBoard[index/3][index%3] == "":
 				searchBoard[index/3][index%3] = "X"
-				var score = search(depth-1, searchBoard.duplicate(true), false)-10
+				var score = search(depth-1, searchBoard.duplicate(true), false)
+				searchBoard[index/3][index%3] = ""
 				best = max(score, best)
 	else:
 		best = INF
 		for index in range(9):
 			if searchBoard[index/3][index%3] == "":
-				searchBoard[index/3][index%3] = "X"
-				var score = search(depth-1, searchBoard.duplicate(true), true)-10
+				searchBoard[index/3][index%3] = "O"
+				var score = search(depth-1, searchBoard.duplicate(true), true)
+				searchBoard[index/3][index%3] = ""
 				best = min(score, best)
 	return best
 
@@ -88,9 +90,9 @@ func evaluate(evalBoard):
 	var win = checkWin(evalBoard)
 	var score = 0
 	if win == -1:
-		return -500
+		return -INF
 	elif win == 1:
-		return 1000
+		return INF
 	score += 7 * dict[board[0][0]]
 	score += 7 * dict[board[2][0]]
 	score += 7 * dict[board[2][2]]
@@ -112,7 +114,7 @@ func resetGame():
 				board[AIIndex/3][AIIndex%3] = "O"
 				var score = search(9, board.duplicate(true), true)
 				board[AIIndex/3][AIIndex%3] = ""
-				if score < bestScore:
+				if score <= bestScore:
 					bestScore = score
 					bestMove = AIIndex
 		place(bestMove, buttons[bestMove])
